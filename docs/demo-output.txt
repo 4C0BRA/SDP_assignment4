@@ -1,0 +1,71 @@
+=== 1. Successful enrollment
+    [Prerequisites] S-ARUZHAN meets the requirements of SE-301
+    [Seats] reserved seat in SE-301 for S-ARUZHAN (29 left)
+    [Schedule] added SE-301 at TUE 10:00 for S-ARUZHAN
+    [Billing] invoiced 125000 KZT to S-ARUZHAN for SE-301
+    [Notification] to aruzhan@astanait.edu.kz: You are enrolled in SE-301 Software Design Patterns, TUE 10:00. Invoice: 125000 KZT
+  -> SUCCESS SE-301: enrolled, TUE 10:00, 125000 KZT
+
+=== 2. Missing prerequisite (nothing reserved)
+    [Prerequisites] S-DIAS has not completed [SE-201] for SE-301
+    [Notification] to dias@astanait.edu.kz: Enrollment in SE-301 failed: SE-301 requires SE-201
+  -> FAILED SE-301: SE-301 requires SE-201
+
+=== 3. Last free seat
+    [Prerequisites] S-ARUZHAN meets the requirements of DB-210
+    [Seats] reserved seat in DB-210 for S-ARUZHAN (0 left)
+    [Schedule] added DB-210 at WED 14:00 for S-ARUZHAN
+    [Billing] invoiced 125000 KZT to S-ARUZHAN for DB-210
+    [Notification] to aruzhan@astanait.edu.kz: You are enrolled in DB-210 Databases, WED 14:00. Invoice: 125000 KZT
+  -> SUCCESS DB-210: enrolled, WED 14:00, 125000 KZT
+
+=== 4. Course is full
+    [Prerequisites] S-DIAS meets the requirements of DB-210
+    [Seats] DB-210 has no free seats for S-DIAS
+    [Notification] to dias@astanait.edu.kz: Enrollment in DB-210 failed: DB-210 is full (1 of 1 seats taken)
+  -> FAILED DB-210: DB-210 is full (1 of 1 seats taken)
+
+=== 5. Time clash (seat released again)
+    [Prerequisites] S-ARUZHAN meets the requirements of MA-220
+    [Seats] reserved seat in MA-220 for S-ARUZHAN (24 left)
+    [Schedule] MA-220 clashes with SE-301 at TUE 10:00
+    [Seats] released seat in MA-220 of S-ARUZHAN
+    [Notification] to aruzhan@astanait.edu.kz: Enrollment in MA-220 failed: MA-220 at TUE 10:00 clashes with SE-301
+  -> FAILED MA-220: MA-220 at TUE 10:00 clashes with SE-301
+
+=== 6. Billing blocked (schedule and seat rolled back)
+    [Prerequisites] S-TIMUR meets the requirements of SE-301
+    [Seats] reserved seat in SE-301 for S-TIMUR (28 left)
+    [Schedule] added SE-301 at TUE 10:00 for S-TIMUR
+    [Billing] refused SE-301 for S-TIMUR: account blocked
+    [Schedule] removed SE-301 for S-TIMUR
+    [Seats] released seat in SE-301 of S-TIMUR
+    [Notification] to timur@astanait.edu.kz: Enrollment in SE-301 failed: billing account of S-TIMUR is blocked (unpaid debt)
+  -> FAILED SE-301: billing account of S-TIMUR is blocked (unpaid debt)
+
+=== 7. Already enrolled
+    [Prerequisites] S-ARUZHAN meets the requirements of SE-301
+    [Notification] to aruzhan@astanait.edu.kz: Enrollment in SE-301 failed: S-ARUZHAN is already enrolled in SE-301
+  -> FAILED SE-301: S-ARUZHAN is already enrolled in SE-301
+
+=== 8. Drop a course (refund)
+    [Schedule] removed SE-301 for S-ARUZHAN
+    [Seats] released seat in SE-301 of S-ARUZHAN
+    [Billing] refunded 125000 KZT to S-ARUZHAN for SE-301
+    [Notification] to aruzhan@astanait.edu.kz: You dropped SE-301. Refund: 125000 KZT
+  -> SUCCESS SE-301: dropped, refund 125000 KZT
+
+=== 9. Drop a course the student is not in
+  -> FAILED SE-301: S-DIAS is not enrolled in this course
+
+=== 10. Unknown course code
+    [Notification] to dias@astanait.edu.kz: Enrollment in CS-999 failed: no course with code CS-999
+  -> FAILED CS-999: no course with code CS-999
+
+----- advanced client -----
+=== Advanced client: the registrar office manages seats and timetables directly, no facade
+  free seats in DB-210: 1
+    [Seats] reserved seat in DB-210 for S-GUEST (0 left)
+    [Schedule] added DB-210 at WED 14:00 for S-GUEST
+  free seats in DB-210: 0
+  timetable of S-GUEST: [DB-210 WED 14:00]

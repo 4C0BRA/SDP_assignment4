@@ -1,0 +1,119 @@
+@startuml facade
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam classBackgroundColor #FFFFFF
+skinparam classBorderColor #333333
+skinparam ArrowColor #333333
+skinparam packageStyle rectangle
+skinparam dpi 150
+hide empty members
+skinparam nodesep 30
+skinparam ranksep 55
+
+package "enrollment (clients)" {
+  class Main <<Client>> {
+    + {static} main(args: String[])
+  }
+  class AdvancedClientDemo <<Advanced client>> {
+    + {static} main(args: String[])
+  }
+}
+
+package "enrollment.config" {
+  class DemoUniversity {
+    + {static} createEnrollment(): EnrollmentFacade
+    + {static} catalogWithCourses(): CourseCatalog
+  }
+}
+
+package "enrollment.model" {
+  class Student <<record>> {
+    + id(): String
+    + email(): String
+    + hasCompleted(courseCode): boolean
+  }
+}
+
+package "enrollment.facade (Facade)" {
+  class EnrollmentFacade <<Facade>> {
+    - catalog: CourseCatalog
+    - prerequisites: PrerequisiteChecker
+    - seats: SeatRegistry
+    - schedule: ScheduleService
+    - billing: TuitionBilling
+    - notifications: NotificationService
+    + enroll(student: Student, courseCode: String): EnrollmentResult
+    + drop(student: Student, courseCode: String): EnrollmentResult
+  }
+  class EnrollmentResult <<record>> {
+    + courseCode(): String
+    + successful(): boolean
+    + message(): String
+  }
+}
+
+package "enrollment.subsystem (Complex subsystem)" {
+  class CourseCatalog {
+    + add(course: Course)
+    + find(courseCode): Course
+  }
+  class PrerequisiteChecker {
+    + check(student, course)
+  }
+  class SeatRegistry {
+    + reserve(course, studentId)
+    + release(course, studentId)
+    + freeSeats(course): int
+  }
+  class ScheduleService {
+    + add(studentId, course)
+    + remove(studentId, course)
+    + isEnrolled(studentId, courseCode): boolean
+  }
+  class TuitionBilling {
+    + charge(studentId, course): int
+    + refund(studentId, course): int
+  }
+  class NotificationService {
+    + send(email, message)
+  }
+  class Course <<record>>
+  abstract class EnrollmentException
+}
+
+Main ..> DemoUniversity : gets facade
+Main ..> EnrollmentFacade : enroll() / drop()
+Main ..> Student
+DemoUniversity ..> EnrollmentFacade : creates and wires
+
+EnrollmentFacade --> CourseCatalog : 1. find
+EnrollmentFacade --> PrerequisiteChecker : 2. check
+EnrollmentFacade --> SeatRegistry : 3. reserve / release
+EnrollmentFacade --> ScheduleService : 4. add / remove
+EnrollmentFacade --> TuitionBilling : 5. charge / refund
+EnrollmentFacade --> NotificationService : 6. send
+EnrollmentFacade ..> EnrollmentResult : returns
+EnrollmentFacade ..> EnrollmentException : catches, rolls back
+
+AdvancedClientDemo ..> SeatRegistry : uses directly\n(bypasses facade)
+AdvancedClientDemo ..> ScheduleService : uses directly
+
+CourseCatalog -[hidden]down- Course
+SeatRegistry -[hidden]down- EnrollmentException
+
+skinparam legendBackgroundColor #FAFAFA
+skinparam legendBorderColor #888888
+skinparam legendFontSize 13
+legend bottom right
+  <b>Legend</b>
+  |= Symbol |= Line |= Meaning in this diagram |
+  | <size:16>——></size> | solid, open arrow | <b>association</b>: the facade holds the service in a field |
+  | <size:16>- - -></size> | dashed, open arrow | <b>dependency</b>: creates, calls, returns or catches the class |
+  | 1. … 6. | | order of steps inside enroll() |
+  | + - | | public, private |
+  | <u>underlined</u>, <i>italic</i> | | static, abstract |
+  | no arrow from subsystem to facade | | subsystem classes do not know the facade exists |
+endlegend
+@enduml
